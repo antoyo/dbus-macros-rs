@@ -1,0 +1,8 @@
+[package]
+name = "dbus-macros"
+version = "0.1.0"
+authors = ["Antoni Boucher <bouanto@zoho.com>"]
+license = "MIT"
+
+[dependencies]
+dbus = "^0.4"
