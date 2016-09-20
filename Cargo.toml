@@ -3,6 +3,8 @@ name = "dbus-macros"
 version = "0.0.1"
 authors = ["Antoni Boucher <bouanto@zoho.com>"]
 license = "MIT"
+description = "Convenient macros to use the dbus crate"
+repository = "https://github.com/antoyo/dbus-macros-rs"
 
 [dependencies]
 dbus = "^0.4"
