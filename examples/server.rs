@@ -57,6 +57,30 @@ fn main() {
         fn get_variable() -> i32 {
             variable
         }
+
+        fn debug() {
+            println!("Debug");
+        }
+
+        fn debug1(arg1: &str) {
+            println!("Debug: {}", arg1);
+        }
+
+        fn debug2(arg1: &str, arg2: &str) {
+            println!("Debug: {} {}", arg1, arg2);
+        }
+
+        fn debug3(arg1: &str, arg2: &str, arg3: &str) {
+            println!("Debug: {} {} {}", arg1, arg2, arg3);
+        }
+
+        fn debug4(arg1: &str, arg2: &str, arg3: &str, arg4: &str) {
+            println!("Debug: {} {} {} {}", arg1, arg2, arg3, arg4);
+        }
+
+        fn debug5(arg1: &str, arg2: &str, arg3: &str, arg4: &str, arg5: &str) {
+            println!("Debug: {} {} {} {} {}", arg1, arg2, arg3, arg4, arg5);
+        }
     });
 
     hello();

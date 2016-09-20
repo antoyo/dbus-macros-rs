@@ -32,6 +32,12 @@ fn main() {
         fn to_string5(arg1: &str, arg2: &str, arg3: &str, arg4: &str, arg5: &str) -> String;
         fn int_to_string(int: i32) -> String;
         fn get_variable() -> i32;
+        fn debug();
+        fn debug1(arg1: &str);
+        fn debug2(arg1: &str, arg2: &str);
+        fn debug3(arg1: &str, arg2: &str, arg3: &str);
+        fn debug4(arg1: &str, arg2: &str, arg3: &str, arg4: &str);
+        fn debug5(arg1: &str, arg2: &str, arg3: &str, arg4: &str, arg5: &str);
     });
 
     println!("{}", hello());
@@ -43,4 +49,10 @@ fn main() {
     let string: String = int_to_string(42);
     println!("{}", string);
     println!("{}", get_variable());
+    debug();
+    debug1("arg1");
+    debug2("arg1", "arg2");
+    debug3("arg1", "arg2", "arg3");
+    debug4("arg1", "arg2", "arg3", "arg4");
+    debug5("arg1", "arg2", "arg3", "arg4", "arg5");
 }
