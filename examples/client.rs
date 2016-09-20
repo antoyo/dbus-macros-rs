@@ -43,19 +43,22 @@ dbus_interface!("com.dbus.test", interface Hello {
 fn main() {
     let hello = Hello::new("com.dbus.test");
 
-    println!("{}", hello.hello());
-    println!("{}", hello.hello_with_name("World"));
-    println!("{}", hello.greeting("Hi", "Me"));
-    println!("{}", hello.greeting_with_separator("Salut", " - ", "Toi"));
-    println!("{}", hello.greeting_with_separator_and_end("Salut", " - ", "Toi", "?"));
-    println!("{}", hello.to_string5("arg1 ", "arg2 ", "arg3 ", "arg4 ", "arg5"));
-    let string: String = hello.int_to_string(42);
+    match hello.hello() {
+        Ok(string) => println!("{}", string),
+        Err(error) => println!("Error calling DBus service: {}", error),
+    }
+    println!("{}", hello.hello_with_name("World").unwrap());
+    println!("{}", hello.greeting("Hi", "Me").unwrap());
+    println!("{}", hello.greeting_with_separator("Salut", " - ", "Toi").unwrap());
+    println!("{}", hello.greeting_with_separator_and_end("Salut", " - ", "Toi", "?").unwrap());
+    println!("{}", hello.to_string5("arg1 ", "arg2 ", "arg3 ", "arg4 ", "arg5").unwrap());
+    let string: String = hello.int_to_string(42).unwrap();
     println!("{}", string);
-    println!("{}", hello.get_variable());
-    hello.debug();
-    hello.debug1("arg1");
-    hello.debug2("arg1", "arg2");
-    hello.debug3("arg1", "arg2", "arg3");
-    hello.debug4("arg1", "arg2", "arg3", "arg4");
-    hello.debug5("arg1", "arg2", "arg3", "arg4", "arg5");
+    println!("{}", hello.get_variable().unwrap());
+    hello.debug().unwrap();
+    hello.debug1("arg1").unwrap();
+    hello.debug2("arg1", "arg2").unwrap();
+    hello.debug3("arg1", "arg2", "arg3").unwrap();
+    hello.debug4("arg1", "arg2", "arg3", "arg4").unwrap();
+    hello.debug5("arg1", "arg2", "arg3", "arg4", "arg5").unwrap();
 }
