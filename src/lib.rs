@@ -241,16 +241,16 @@ macro_rules! dbus_functions {
 macro_rules! dbus_class {
     ($interface_name:expr, class $class_name:ident { $($functions:tt)* }) => {
         #[derive(Clone)]
-        struct $class_name {
+        pub struct $class_name {
         }
 
         impl $class_name {
-            fn new() -> Self {
+            pub fn new() -> Self {
                 $class_name {
                 }
             }
 
-            fn run(&self, bus_name: &str) {
+            pub fn run(&self, bus_name: &str) {
                 let connection = dbus::Connection::get_private(dbus::BusType::Session).unwrap();
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
@@ -269,18 +269,18 @@ macro_rules! dbus_class {
     };
     ($interface_name:expr, class $class_name:ident ($($variables:ident : $variable_types:ty),*) { $($functions:tt)* }) => {
         #[derive(Clone)]
-        struct $class_name {
+        pub struct $class_name {
             $($variables : $variable_types,)*
         }
 
         impl $class_name {
-            fn new($($variables: $variable_types),*) -> Self {
+            pub fn new($($variables: $variable_types),*) -> Self {
                 $class_name {
                     $($variables : $variables,)*
                 }
             }
 
-            fn run(&self, bus_name: &str) {
+            pub fn run(&self, bus_name: &str) {
                 let connection = dbus::Connection::get_private(dbus::BusType::Session).unwrap();
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
@@ -304,7 +304,7 @@ macro_rules! dbus_prototypes {
     ($interface_name:expr, $class_name:ident, ) => {
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident () -> $return_type:ty; $($rest:tt)*) => {
-        fn $func_name(&self) -> Result<$return_type, dbus::Error> {
+        pub fn $func_name(&self) -> Result<$return_type, dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let response = try!(self.connection.send_with_reply_and_block(message, 2000));
             Ok(response.get1().unwrap())
@@ -312,7 +312,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident (); $($rest:tt)*) => {
-        fn $func_name(&self) -> Result<(), dbus::Error> {
+        pub fn $func_name(&self) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             try!(self.connection.send_with_reply_and_block(message, 2000));
             Ok(())
@@ -320,7 +320,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty) -> $return_type:ty; $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type) -> Result<$return_type, dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type) -> Result<$return_type, dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append1($arg1);
             let response = try!(self.connection.send_with_reply_and_block(message, 2000));
@@ -329,7 +329,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty) ; $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type) -> Result<(), dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append1($arg1);
             try!(self.connection.send_with_reply_and_block(message, 2000));
@@ -338,7 +338,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty) -> $return_type:ty; $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type) -> Result<$return_type, dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type) -> Result<$return_type, dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append2($arg1, $arg2);
             let response = try!(self.connection.send_with_reply_and_block(message, 2000));
@@ -347,7 +347,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty); $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type) -> Result<(), dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append2($arg1, $arg2);
             try!(self.connection.send_with_reply_and_block(message, 2000));
@@ -356,7 +356,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty) -> $return_type:ty; $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type) -> Result<$return_type, dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type) -> Result<$return_type, dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append3($arg1, $arg2, $arg3);
             let response = try!(self.connection.send_with_reply_and_block(message, 2000));
@@ -365,7 +365,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty); $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type) -> Result<(), dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append3($arg1, $arg2, $arg3);
             try!(self.connection.send_with_reply_and_block(message, 2000));
@@ -374,7 +374,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty) -> $return_type:ty; $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type, $arg4: $arg4_type) -> Result<$return_type, dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type, $arg4: $arg4_type) -> Result<$return_type, dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append($arg1);
             let message = message.append($arg2);
@@ -386,7 +386,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty); $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type, $arg4: $arg4_type) -> Result<(), dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type, $arg4: $arg4_type) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append($arg1);
             let message = message.append($arg2);
@@ -398,7 +398,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty, $arg5:ident : $arg5_type:ty) -> $return_type:ty; $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type, $arg4: $arg4_type, $arg5: $arg5_type) -> Result<$return_type, dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type, $arg4: $arg4_type, $arg5: $arg5_type) -> Result<$return_type, dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append($arg1);
             let message = message.append($arg2);
@@ -411,7 +411,7 @@ macro_rules! dbus_prototypes {
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ($arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty, $arg5:ident : $arg5_type:ty); $($rest:tt)*) => {
-        fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type, $arg4: $arg4_type, $arg5: $arg5_type) -> Result<(), dbus::Error> {
+        pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type, $arg4: $arg4_type, $arg5: $arg5_type) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append($arg1);
             let message = message.append($arg2);
@@ -428,13 +428,13 @@ macro_rules! dbus_prototypes {
 #[macro_export]
 macro_rules! dbus_interface {
     ($interface_name:expr, interface $class_name:ident { $($prototypes:tt)* }) => {
-        struct $class_name {
+        pub struct $class_name {
             bus_name: String,
             connection: dbus::Connection,
         }
 
         impl $class_name {
-            fn new(dbus_name: &str) -> Self {
+            pub fn new(dbus_name: &str) -> Self {
                 $class_name {
                     bus_name: dbus_name.to_string(),
                     connection: dbus::Connection::get_private(dbus::BusType::Session).unwrap(),
