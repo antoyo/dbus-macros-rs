@@ -19,15 +19,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#![allow(let_and_return)]
+/*
+ * TODO: Switch to macro 1.1.
+ */
 
-extern crate dbus;
+#![allow(let_and_return)]
 
 #[macro_export]
 macro_rules! dbus_functions {
-    ($factory:expr, $interface:ident,) => {
+    ($self_:expr, $factory:expr, $interface:ident,) => {
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident () -> $return_type:ty $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident) -> $return_type:ty $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let result = $block;
@@ -35,9 +38,10 @@ macro_rules! dbus_functions {
             })
                 .outarg::<$return_type, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident () $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident) $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 $block;
@@ -46,9 +50,10 @@ macro_rules! dbus_functions {
             })
                 .outarg::<i32, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty ) -> $return_type:ty $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty ) -> $return_type:ty $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let $arg1: $arg1_type = method.msg.get1().unwrap();
@@ -58,9 +63,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg1_type, _>(stringify!($arg1))
                 .outarg::<$return_type, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty ) $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty ) $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let $arg1: $arg1_type = method.msg.get1().unwrap();
@@ -71,9 +77,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg1_type, _>(stringify!($arg1))
                 .outarg::<i32, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty ) -> $return_type:ty $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty ) -> $return_type:ty $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let ($arg1, $arg2): (Option<$arg1_type>, Option<$arg2_type>) = method.msg.get2();
@@ -86,9 +93,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg2_type, _>(stringify!($arg2))
                 .outarg::<$return_type, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty ) $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty ) $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let ($arg1, $arg2): (Option<$arg1_type>, Option<$arg2_type>) = method.msg.get2();
@@ -102,9 +110,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg2_type, _>(stringify!($arg2))
                 .outarg::<i32, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty) -> $return_type:ty $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty) -> $return_type:ty $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let ($arg1, $arg2, $arg3): (Option<$arg1_type>, Option<$arg2_type>, Option<$arg3_type>) = method.msg.get3();
@@ -119,9 +128,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg3_type, _>(stringify!($arg3))
                 .outarg::<$return_type, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty) $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty) $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let ($arg1, $arg2, $arg3): (Option<$arg1_type>, Option<$arg2_type>, Option<$arg3_type>) = method.msg.get3();
@@ -137,9 +147,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg3_type, _>(stringify!($arg3))
                 .outarg::<i32, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty) -> $return_type:ty $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty) -> $return_type:ty $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let ($arg1, $arg2, $arg3, $arg4): (Option<$arg1_type>, Option<$arg2_type>, Option<$arg3_type>, Option<$arg4_type>) = method.msg.get4();
@@ -156,9 +167,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg4_type, _>(stringify!($arg4))
                 .outarg::<$return_type, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty) $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty) $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let ($arg1, $arg2, $arg3, $arg4): (Option<$arg1_type>, Option<$arg2_type>, Option<$arg3_type>, Option<$arg4_type>) = method.msg.get4();
@@ -176,9 +188,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg4_type, _>(stringify!($arg4))
                 .outarg::<i32, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty, $arg5:ident : $arg5_type:ty) -> $return_type:ty $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty, $arg5:ident : $arg5_type:ty) -> $return_type:ty $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let ($arg1, $arg2, $arg3, $arg4, $arg5): (Option<$arg1_type>, Option<$arg2_type>, Option<$arg3_type>, Option<$arg4_type>, Option<$arg5_type>) = method.msg.get5();
@@ -197,9 +210,10 @@ macro_rules! dbus_functions {
                 .inarg::<$arg5_type, _>(stringify!($arg5))
                 .outarg::<$return_type, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
-    ($factory:expr, $interface:ident, fn $func_name:ident ( $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty, $arg5:ident : $arg5_type:ty) $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident, $arg1:ident : $arg1_type:ty, $arg2:ident : $arg2_type:ty, $arg3:ident : $arg3_type:ty, $arg4:ident : $arg4_type:ty, $arg5:ident : $arg5_type:ty) $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(stringify!($func_name), (), move |method| {
                 let ($arg1, $arg2, $arg3, $arg4, $arg5): (Option<$arg1_type>, Option<$arg2_type>, Option<$arg3_type>, Option<$arg4_type>, Option<$arg5_type>) = method.msg.get5();
@@ -219,31 +233,70 @@ macro_rules! dbus_functions {
                 .inarg::<$arg5_type, _>(stringify!($arg5))
                 .outarg::<i32, _>("result")
         );
-        dbus_functions!($factory, $interface, $($rest)*);
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
     };
 }
 
 #[macro_export]
 macro_rules! dbus_class {
-    ($bus_name:expr, $interface_name:expr, class $class_name:ident { $($functions:tt)* }) => {{
-        extern crate dbus;
+    ($interface_name:expr, class $class_name:ident { $($functions:tt)* }) => {
+        #[derive(Clone)]
+        struct $class_name {
+        }
 
-        let connection = dbus::Connection::get_private(dbus::BusType::Session).unwrap();
-        connection.register_name($bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
+        impl $class_name {
+            fn new() -> Self {
+                $class_name {
+                }
+            }
 
-        let factory = dbus::tree::Factory::new_fn::<()>();
-        let class = factory.tree().add(factory.object_path(format!("/{}", stringify!($class_name)), ()).introspectable().add({
-            let interface = factory.interface($interface_name, ());
-            dbus_functions!(factory, interface, $($functions)*);
-            interface
-        }));
-        class.set_registered(&connection, true).unwrap();
+            fn run(&self, bus_name: &str) {
+                let connection = dbus::Connection::get_private(dbus::BusType::Session).unwrap();
+                connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
-        move || {
-            for _ in class.run(&connection, connection.iter(1000)) {
+                let factory = dbus::tree::Factory::new_fn::<()>();
+                let class = factory.tree().add(factory.object_path(format!("/{}", stringify!($class_name)), ()).introspectable().add({
+                    let interface = factory.interface($interface_name, ());
+                    dbus_functions!(self, factory, interface, $($functions)*);
+                    interface
+                }));
+                class.set_registered(&connection, true).unwrap();
+
+                for _ in class.run(&connection, connection.iter(1000)) {
+                }
             }
         }
-    }};
+    };
+    ($interface_name:expr, class $class_name:ident ($($variables:ident : $variable_types:ty),*) { $($functions:tt)* }) => {
+        #[derive(Clone)]
+        struct $class_name {
+            $($variables : $variable_types,)*
+        }
+
+        impl $class_name {
+            fn new($($variables: $variable_types),*) -> Self {
+                $class_name {
+                    $($variables : $variables,)*
+                }
+            }
+
+            fn run(&self, bus_name: &str) {
+                let connection = dbus::Connection::get_private(dbus::BusType::Session).unwrap();
+                connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
+
+                let factory = dbus::tree::Factory::new_fn::<()>();
+                let class = factory.tree().add(factory.object_path(format!("/{}", stringify!($class_name)), ()).introspectable().add({
+                    let interface = factory.interface($interface_name, ());
+                    dbus_functions!(self, factory, interface, $($functions)*);
+                    interface
+                }));
+                class.set_registered(&connection, true).unwrap();
+
+                for _ in class.run(&connection, connection.iter(1000)) {
+                }
+            }
+        }
+    };
 }
 
 #[macro_export]
@@ -375,8 +428,6 @@ macro_rules! dbus_prototypes {
 #[macro_export]
 macro_rules! dbus_interface {
     ($interface_name:expr, interface $class_name:ident { $($prototypes:tt)* }) => {
-        extern crate dbus;
-
         struct $class_name {
             bus_name: String,
             connection: dbus::Connection,

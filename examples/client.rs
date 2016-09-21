@@ -19,8 +19,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+extern crate dbus;
 #[macro_use]
 extern crate dbus_macros;
+
+dbus_interface!("com.dbus.simple", interface Simple {
+    fn hello() -> String;
+});
 
 dbus_interface!("com.dbus.test", interface Hello {
     fn hello() -> String;
@@ -61,4 +66,7 @@ fn main() {
     hello.debug3("arg1", "arg2", "arg3").unwrap();
     hello.debug4("arg1", "arg2", "arg3", "arg4").unwrap();
     hello.debug5("arg1", "arg2", "arg3", "arg4", "arg5").unwrap();
+
+    /*let simple = Simple::new("com.dbus.simple");
+    println!("{}", simple.hello().unwrap());*/
 }
