@@ -314,7 +314,7 @@ macro_rules! dbus_prototypes {
     ($interface_name:expr, $class_name:ident, fn $func_name:ident (); $($rest:tt)*) => {
         pub fn $func_name(&self) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
-            try!(self.connection.send_with_reply_and_block(message, 2000));
+            self.connection.send(message).ok();
             Ok(())
         }
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
@@ -332,7 +332,7 @@ macro_rules! dbus_prototypes {
         pub fn $func_name(&self, $arg1: $arg1_type) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append1($arg1);
-            try!(self.connection.send_with_reply_and_block(message, 2000));
+            self.connection.send(message).ok();
             Ok(())
         }
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
@@ -350,7 +350,7 @@ macro_rules! dbus_prototypes {
         pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append2($arg1, $arg2);
-            try!(self.connection.send_with_reply_and_block(message, 2000));
+            self.connection.send(message).ok();
             Ok(())
         }
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
@@ -368,7 +368,7 @@ macro_rules! dbus_prototypes {
         pub fn $func_name(&self, $arg1: $arg1_type, $arg2: $arg2_type, $arg3: $arg3_type) -> Result<(), dbus::Error> {
             let message = dbus::Message::new_method_call(&self.bus_name, &format!("/{}", stringify!($class_name)), $interface_name, stringify!($func_name)).unwrap();
             let message = message.append3($arg1, $arg2, $arg3);
-            try!(self.connection.send_with_reply_and_block(message, 2000));
+            self.connection.send(message).ok();
             Ok(())
         }
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
@@ -392,7 +392,7 @@ macro_rules! dbus_prototypes {
             let message = message.append($arg2);
             let message = message.append($arg3);
             let message = message.append($arg4);
-            try!(self.connection.send_with_reply_and_block(message, 2000));
+            self.connection.send(message).ok();
             Ok(())
         }
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
@@ -418,7 +418,7 @@ macro_rules! dbus_prototypes {
             let message = message.append($arg3);
             let message = message.append($arg4);
             let message = message.append($arg5);
-            try!(self.connection.send_with_reply_and_block(message, 2000));
+            self.connection.send(message).ok();
             Ok(())
         }
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
