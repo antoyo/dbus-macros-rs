@@ -250,8 +250,8 @@ macro_rules! dbus_class {
                 }
             }
 
-            pub fn run(&self, bus_name: &str) {
-                let connection = dbus::Connection::get_private(dbus::BusType::Session).unwrap();
+            pub fn run(&self, bus_name: &str, dbus_type: dbus::BusType) {
+                let connection = dbus::Connection::get_private(dbus_type).unwrap();
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
                 let factory = dbus::tree::Factory::new_fn::<()>();
@@ -280,8 +280,8 @@ macro_rules! dbus_class {
                 }
             }
 
-            pub fn run(&self, bus_name: &str) {
-                let connection = dbus::Connection::get_private(dbus::BusType::Session).unwrap();
+            pub fn run(&self, bus_name: &str, dbus_type: dbus::BusType) {
+                let connection = dbus::Connection::get_private(dbus_type).unwrap();
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
                 let factory = dbus::tree::Factory::new_fn::<()>();
@@ -434,10 +434,10 @@ macro_rules! dbus_interface {
         }
 
         impl $class_name {
-            pub fn new(dbus_name: &str) -> Self {
+            pub fn new(dbus_name: &str, dbus_type: dbus::BusType) -> Self {
                 $class_name {
                     bus_name: dbus_name.to_string(),
-                    connection: dbus::Connection::get_private(dbus::BusType::Session).unwrap(),
+                    connection: dbus::Connection::get_private(dbus_type).unwrap(),
                 }
             }
 
