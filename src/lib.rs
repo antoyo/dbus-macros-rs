@@ -20,6 +20,7 @@
  */
 
 /*
+ * TODO: add Cargo categories.
  * TODO: Switch to macro 1.1.
  */
 
