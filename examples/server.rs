@@ -91,7 +91,7 @@ fn main() {
     let variable = 24;
 
     let hello = Hello::new(variable);
-    hello.run("com.dbus.test");
+    hello.run("com.dbus.test", dbus::BusType::Session);
 
     /*let simple = Simple::new();
     simple.run("com.dbus.simple");*/
