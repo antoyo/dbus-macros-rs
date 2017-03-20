@@ -46,7 +46,7 @@ dbus_interface!("com.dbus.test", interface Hello {
 
 
 fn main() {
-    let hello = Hello::new("com.dbus.test", dbus::BusType::Session);
+    let hello = Hello::new("com.dbus.test", None, dbus::BusType::Session);
 
     match hello.hello() {
         Ok(string) => println!("{}", string),
@@ -67,6 +67,6 @@ fn main() {
     hello.debug4("arg1", "arg2", "arg3", "arg4").unwrap();
     hello.debug5("arg1", "arg2", "arg3", "arg4", "arg5").unwrap();
 
-    /*let simple = Simple::new("com.dbus.simple", dbus::BusType::Session);
+    /*let simple = Simple::new("com.dbus.simple", None, dbus::BusType::Session);
     println!("{}", simple.hello().unwrap());*/
 }
