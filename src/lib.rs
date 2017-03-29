@@ -89,7 +89,7 @@ macro_rules! dbus_class {
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
                 let factory = dbus::tree::Factory::new_fn::<()>();
-                let class = factory.tree().add(factory.object_path(path.to_string(), ()).introspectable().add({
+                let class = factory.tree(()).add(factory.object_path(path.to_string(), ()).introspectable().add({
                     let interface = factory.interface($interface_name, ());
                     dbus_functions!(self, factory, interface, $($functions)*);
                     interface
@@ -119,7 +119,7 @@ macro_rules! dbus_class {
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
                 let factory = dbus::tree::Factory::new_fn::<()>();
-                let class = factory.tree().add(factory.object_path(path.to_string(), ()).introspectable().add({
+                let class = factory.tree(()).add(factory.object_path(path.to_string(), ()).introspectable().add({
                     let interface = factory.interface($interface_name, ());
                     dbus_functions!(self, factory, interface, $($functions)*);
                     interface
