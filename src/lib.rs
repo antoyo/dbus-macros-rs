@@ -26,6 +26,27 @@
 
 #![allow(let_and_return)]
 
+pub fn to_camel(term: &str) -> String {
+    use std::ascii::AsciiExt;
+
+    let underscore_count = term.chars().filter(|c| *c == '_').count();
+    let mut result = String::with_capacity(term.len() - underscore_count);
+    let mut at_new_word = true;
+
+    for c in term.chars() {
+        if c == '_' {
+            at_new_word = true;
+        } else if at_new_word {
+            result.push(c.to_ascii_uppercase());
+            at_new_word = false;
+        } else {
+            result.push(c);
+        }
+    }
+
+    result
+}
+
 #[macro_export]
 macro_rules! dbus_functions {
     ($self_:expr, $factory:expr, $interface:ident,) => {
@@ -33,7 +54,7 @@ macro_rules! dbus_functions {
     ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) -> $return_type:ty $block:block $($rest:tt)*) => {
         let $this = $self_.clone();
         let $interface = $interface.add_m(
-            $factory.method(stringify!($func_name), (), move |method| {
+            $factory.method(::dbus_macros::to_camel(stringify!($func_name)), (), move |method| {
                 let mut i = method.msg.iter_init();
                 $(
                     let $arg: $arg_type = i.get().unwrap();
@@ -52,7 +73,7 @@ macro_rules! dbus_functions {
     ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) $block:block $($rest:tt)*) => {
         let $this = $self_.clone();
         let $interface = $interface.add_m(
-            $factory.method(stringify!($func_name), (), move |method| {
+            $factory.method(::dbus_macros::to_camel(stringify!($func_name)), (), move |method| {
                 let mut i = method.msg.iter_init();
                 $(
                     let $arg: $arg_type = i.get().unwrap();
@@ -139,7 +160,7 @@ macro_rules! dbus_prototypes {
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ( $( $arg:ident : $arg_type:ty ),* ) -> $return_type:ty; $($rest:tt)*) => {
         pub fn $func_name(&self, $( $arg: $arg_type ),* ) -> Result<$return_type, dbus::Error> {
-            let message = dbus::Message::new_method_call(&self.bus_name, &self.path, $interface_name, stringify!($func_name)).unwrap();
+            let message = dbus::Message::new_method_call(&self.bus_name, &self.path, $interface_name, ::dbus_macros::to_camel(stringify!($func_name))).unwrap();
             $(
                 let message = message.append1($arg);
             )*
@@ -150,7 +171,7 @@ macro_rules! dbus_prototypes {
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ( $( $arg:ident : $arg_type:ty ),* ) ; $($rest:tt)*) => {
         pub fn $func_name(&self, $( $arg: $arg_type ),* ) -> Result<(), dbus::Error> {
-            let message = dbus::Message::new_method_call(&self.bus_name, &self.path, $interface_name, stringify!($func_name)).unwrap();
+            let message = dbus::Message::new_method_call(&self.bus_name, &self.path, $interface_name, ::dbus_macros::to_camel(stringify!($func_name))).unwrap();
             $(
                 let message = message.append1($arg);
             )*
