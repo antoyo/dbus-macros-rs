@@ -105,12 +105,12 @@ macro_rules! dbus_class {
                 }
             }
 
-            pub fn run(&self, bus_name: &str, dbus_type: dbus::BusType, path: &str) {
+            pub fn run<P>(&self, bus_name: &str, dbus_type: dbus::BusType, path: P)  where P: Into<dbus::Path<'static>> {
                 let connection = dbus::Connection::get_private(dbus_type).unwrap();
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
                 let factory = dbus::tree::Factory::new_fn::<()>();
-                let class = factory.tree(()).add(factory.object_path(path.to_string(), ()).introspectable().add({
+                let class = factory.tree(()).add(factory.object_path(path, ()).introspectable().add({
                     let interface = factory.interface($interface_name, ());
                     dbus_functions!(self, factory, interface, $($functions)*);
                     interface
@@ -135,12 +135,12 @@ macro_rules! dbus_class {
                 }
             }
 
-            pub fn run(&self, bus_name: &str, dbus_type: dbus::BusType, path: &str) {
+            pub fn run<P>(&self, bus_name: &str, dbus_type: dbus::BusType, path: P)  where P: Into<dbus::Path<'static>> {
                 let connection = dbus::Connection::get_private(dbus_type).unwrap();
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
                 let factory = dbus::tree::Factory::new_fn::<()>();
-                let class = factory.tree(()).add(factory.object_path(path.to_string(), ()).introspectable().add({
+                let class = factory.tree(()).add(factory.object_path(path, ()).introspectable().add({
                     let interface = factory.interface($interface_name, ());
                     dbus_functions!(self, factory, interface, $($functions)*);
                     interface
@@ -160,7 +160,7 @@ macro_rules! dbus_prototypes {
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ( $( $arg:ident : $arg_type:ty ),* ) -> $return_type:ty; $($rest:tt)*) => {
         pub fn $func_name(&self, $( $arg: $arg_type ),* ) -> Result<$return_type, dbus::Error> {
-            let message = dbus::Message::new_method_call(&self.bus_name, &self.path, $interface_name, ::dbus_macros::to_camel(stringify!($func_name))).unwrap();
+            let message = dbus::Message::new_method_call(&self.bus_name, self.path.clone(), $interface_name, ::dbus_macros::to_camel(stringify!($func_name))).unwrap();
             $(
                 let message = message.append1($arg);
             )*
@@ -171,7 +171,7 @@ macro_rules! dbus_prototypes {
     };
     ($interface_name:expr, $class_name:ident, fn $func_name:ident ( $( $arg:ident : $arg_type:ty ),* ) ; $($rest:tt)*) => {
         pub fn $func_name(&self, $( $arg: $arg_type ),* ) -> Result<(), dbus::Error> {
-            let message = dbus::Message::new_method_call(&self.bus_name, &self.path, $interface_name, ::dbus_macros::to_camel(stringify!($func_name))).unwrap();
+            let message = dbus::Message::new_method_call(&self.bus_name, self.path.clone(), $interface_name, ::dbus_macros::to_camel(stringify!($func_name))).unwrap();
             $(
                 let message = message.append1($arg);
             )*
@@ -185,17 +185,17 @@ macro_rules! dbus_prototypes {
 #[macro_export]
 macro_rules! dbus_interface {
     ($interface_name:expr, interface $class_name:ident { $($prototypes:tt)* }) => {
-        pub struct $class_name {
+        pub struct $class_name<'a> {
             bus_name: String,
-            path: String,
+            path: dbus::Path<'a>,
             connection: dbus::Connection,
         }
 
-        impl $class_name {
-            pub fn new(dbus_name: &str, path: &str, dbus_type: dbus::BusType) -> Self {
+        impl<'a>  $class_name<'a> {
+            pub fn new<P>(dbus_name: &str, path: P, dbus_type: dbus::BusType) -> Self where P: Into<dbus::Path<'a>> {
                 $class_name {
                     bus_name: dbus_name.to_string(),
-                    path: path.to_string(),
+                    path: path.into(),
                     connection: dbus::Connection::get_private(dbus_type).unwrap(),
                 }
             }
