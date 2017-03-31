@@ -47,6 +47,10 @@ pub fn to_camel(term: &str) -> String {
     result
 }
 
+//
+// Server-side
+//
+
 #[macro_export]
 macro_rules! dbus_functions {
     ($self_:expr, $factory:expr, $interface:ident,) => {
@@ -153,6 +157,10 @@ macro_rules! dbus_class {
         }
     };
 }
+
+//
+// Client-side
+//
 
 #[macro_export]
 macro_rules! dbus_prototypes {
