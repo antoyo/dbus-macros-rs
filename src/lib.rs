@@ -55,7 +55,7 @@ pub fn to_camel(term: &str) -> String {
 macro_rules! dbus_functions {
     ($self_:expr, $factory:expr, $interface:ident,) => {
     };
-    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) -> $return_type:ty $block:block $($rest:tt)*) => {
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) -> ( $return_type:ty ),* $block:block $($rest:tt)*) => {
         let $this = $self_.clone();
         let $interface = $interface.add_m(
             $factory.method(::dbus_macros::to_camel(stringify!($func_name)), (), move |method| {
@@ -65,6 +65,9 @@ macro_rules! dbus_functions {
                     i.next();
                 )*
                 let result = $block;
+                $(
+                    method.msg.method_return().append1(result))
+                )*
                 Ok(vec!(method.msg.method_return().append1(result)))
             })
                 $(
@@ -73,6 +76,9 @@ macro_rules! dbus_functions {
                 .outarg::<$return_type, _>("result")
         );
         dbus_functions!($self_, $factory, $interface, $($rest)*);
+    };
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) -> $return_type:ty $block:block $($rest:tt)*) => {
+        dbus_functions!($self_, $factory, $interface, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) -> ( $return_type:ty ) $block:block $($rest)*);
     };
     ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) $block:block $($rest:tt)*) => {
         let $this = $self_.clone();

@@ -38,6 +38,11 @@ dbus_class!("com.dbus.test", class Hello (variable: i32) {
         format!("Hello, {}!", name)
     }
 
+    fn hello_multi_return(&this) -> (String, String) {
+        ("Hello!", "yes, you there!")
+    }
+
+
     fn greeting(&this, greeting: &str, name: &str) -> String {
         format!("{}, {}!", greeting, name)
     }

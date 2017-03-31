@@ -30,6 +30,7 @@ dbus_interface!("com.dbus.simple", interface Simple {
 dbus_interface!("com.dbus.test", interface Hello {
     fn hello() -> String;
     fn hello_with_name(name: &str) -> String;
+    //fn hello_multi_return(&this) -> (String, String);
     fn greeting(greeting: &str, name: &str) -> String;
     fn greeting_with_separator(greeting: &str, separator: &str, name: &str) -> String;
     fn greeting_with_separator_and_end(greeting: &str, separator: &str, name: &str, end: &str) -> String;
@@ -53,6 +54,8 @@ fn main() {
         Err(error) => println!("Error calling DBus service: {}", error),
     }
     println!("{}", hello.hello_with_name("World").unwrap());
+    //let (x, y) = hello.hello_multi_return().unwrap();
+    //println!("{} {}", x, y);
     println!("{}", hello.greeting("Hi", "Me").unwrap());
     println!("{}", hello.greeting_with_separator("Salut", " - ", "Toi").unwrap());
     println!("{}", hello.greeting_with_separator_and_end("Salut", " - ", "Toi", "?").unwrap());
