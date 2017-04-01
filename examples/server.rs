@@ -38,6 +38,10 @@ dbus_class!("com.dbus.test", class Hello (variable: i32) {
         format!("Hello, {}!", name)
     }
 
+    fn hello_with_error(&this) -> Result<String,dbus::Error> {
+        Err(dbus::Error::new_custom("com.dbus.test.Error", "This error is expected, don't panic!"))
+    }
+
     fn greeting(&this, greeting: &str, name: &str) -> String {
         format!("{}, {}!", greeting, name)
     }

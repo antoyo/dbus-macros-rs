@@ -55,6 +55,25 @@ pub fn to_camel(term: &str) -> String {
 macro_rules! dbus_functions {
     ($self_:expr, $factory:expr, $interface:ident,) => {
     };
+    ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) -> Result<$return_type:ty,$error:ty> $block:block $($rest:tt)*) => {
+        let $this = $self_.clone();
+        let $interface = $interface.add_m(
+            $factory.method(::dbus_macros::to_camel(stringify!($func_name)), (), move |method| {
+                let mut i = method.msg.iter_init();
+                $(
+                    let $arg: $arg_type = i.get().unwrap();
+                    i.next();
+                )*
+                let result: $return_type = $block?;
+                Ok(vec!(method.msg.method_return().append1(result)))
+            })
+                $(
+                    .inarg::<$arg_type, _>(stringify!($arg))
+                )*
+                .outarg::<$return_type, _>("result")
+        );
+        dbus_functions!($self_, $factory, $interface, $($rest)*);
+    };
     ($self_:expr, $factory:expr, $interface:ident, fn $func_name:ident (&$this:ident $(, $arg:ident : $arg_type:ty )* ) -> $return_type:ty $block:block $($rest:tt)*) => {
         let $this = $self_.clone();
         let $interface = $interface.add_m(
