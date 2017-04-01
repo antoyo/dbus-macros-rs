@@ -61,7 +61,7 @@ macro_rules! dbus_functions {
             $factory.method(::dbus_macros::to_camel(stringify!($func_name)), (), move |method| {
                 let mut i = method.msg.iter_init();
                 $(
-                    let $arg: $arg_type = i.get().unwrap();
+                    let $arg: $arg_type = i.get().ok_or(dbus::tree::MethodErr::no_arg())?;
                     i.next();
                 )*
                 let result: $return_type = $block?;
@@ -80,7 +80,7 @@ macro_rules! dbus_functions {
             $factory.method(::dbus_macros::to_camel(stringify!($func_name)), (), move |method| {
                 let mut i = method.msg.iter_init();
                 $(
-                    let $arg: $arg_type = i.get().unwrap();
+                    let $arg: $arg_type = i.get().ok_or(dbus::tree::MethodErr::no_arg())?;
                     i.next();
                 )*
                 let result = $block;
@@ -99,7 +99,7 @@ macro_rules! dbus_functions {
             $factory.method(::dbus_macros::to_camel(stringify!($func_name)), (), move |method| {
                 let mut i = method.msg.iter_init();
                 $(
-                    let $arg: $arg_type = i.get().unwrap();
+                    let $arg: $arg_type = i.get().ok_or(dbus::tree::MethodErr::no_arg())?;
                     i.next();
                 )*
                 $block;
@@ -192,7 +192,7 @@ macro_rules! dbus_prototypes {
                 let message = message.append1($arg);
             )*
             let response = try!(self.connection.send_with_reply_and_block(message, 2000));
-            Ok(response.get1().unwrap())
+            response.get1().ok_or(dbus::Error::from(dbus::tree::MethodErr::no_arg()))
         }
         dbus_prototypes!($interface_name, $class_name, $($rest)*);
     };
