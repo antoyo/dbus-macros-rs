@@ -17,12 +17,6 @@ extern crate dbus;
 #[macro_use]
 extern crate dbus_macros;
 
-dbus_class!("com.dbus.simple", class Simple {
-    fn hello(&this) -> String {
-        "Hello!"
-    }
-});
-
 dbus_class!("com.dbus.test", class Hello (variable: i32) {
     fn hello(&this) -> String {
         "Hello!"
