@@ -1,6 +1,6 @@
 [package]
 name = "dbus-macros"
-version = "0.1.0"
+version = "0.1.1-pre"
 authors = ["Antoni Boucher <bouanto@zoho.com>"]
 license = "MIT"
 description = "Convenient macros to use the dbus crate"
