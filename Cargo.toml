@@ -1,7 +1,8 @@
 [package]
 name = "dbus-macros"
 version = "0.1.1-pre"
-authors = ["Antoni Boucher <bouanto@zoho.com>"]
+authors = ["Antoni Boucher <bouanto@zoho.com>",
+           "Zeeshan Ali <zeeshanak@gnome.org>"]
 license = "MIT"
 description = "Convenient macros to use the dbus crate"
 repository = "https://github.com/antoyo/dbus-macros-rs"
