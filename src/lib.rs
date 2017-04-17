@@ -128,8 +128,7 @@ macro_rules! dbus_class {
                 }
             }
 
-            pub fn run<P>(&self, bus_name: &str, dbus_type: dbus::BusType, path: P)  where P: Into<dbus::Path<'static>> {
-                let connection = dbus::Connection::get_private(dbus_type).unwrap();
+            pub fn run<P>(&self, bus_name: &str, connection: &dbus::Connection, path: P)  where P: Into<dbus::Path<'static>> {
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
                 let factory = dbus::tree::Factory::new_fn::<()>();
@@ -158,8 +157,7 @@ macro_rules! dbus_class {
                 }
             }
 
-            pub fn run<P>(&self, bus_name: &str, dbus_type: dbus::BusType, path: P)  where P: Into<dbus::Path<'static>> {
-                let connection = dbus::Connection::get_private(dbus_type).unwrap();
+            pub fn run<P>(&self, bus_name: &str, connection: &dbus::Connection, path: P)  where P: Into<dbus::Path<'static>> {
                 connection.register_name(bus_name, dbus::NameFlag::ReplaceExisting as u32).unwrap();
 
                 let factory = dbus::tree::Factory::new_fn::<()>();
@@ -215,15 +213,15 @@ macro_rules! dbus_interface {
         pub struct $class_name<'a> {
             bus_name: String,
             path: dbus::Path<'a>,
-            connection: dbus::Connection,
+            connection: Rc<dbus::Connection>,
         }
 
         impl<'a>  $class_name<'a> {
-            pub fn new<P>(dbus_name: &str, path: P, dbus_type: dbus::BusType) -> Self where P: Into<dbus::Path<'a>> {
+            pub fn new<P>(dbus_name: &str, path: P, connection: Rc<dbus::Connection>) -> Self where P: Into<dbus::Path<'a>> {
                 $class_name {
                     bus_name: dbus_name.to_string(),
                     path: path.into(),
-                    connection: dbus::Connection::get_private(dbus_type).unwrap(),
+                    connection: connection,
                 }
             }
 

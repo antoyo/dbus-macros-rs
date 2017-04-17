@@ -89,5 +89,6 @@ fn main() {
     let variable = 24;
 
     let hello = Hello::new(variable);
-    hello.run("com.dbus.test", dbus::BusType::Session, "/Hello");
+    let connection = dbus::Connection::get_private(dbus::BusType::Session).unwrap();
+    hello.run("com.dbus.test", &connection, "/Hello");
 }
