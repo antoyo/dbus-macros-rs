@@ -17,6 +17,9 @@ extern crate dbus;
 #[macro_use]
 extern crate dbus_macros;
 
+use dbus::{Connection, BusType};
+use std::rc::Rc;
+
 dbus_class!("com.dbus.test", class Hello (variable: i32) {
     fn hello(&this) -> String {
         "Hello!"
@@ -25,13 +28,17 @@ dbus_class!("com.dbus.test", class Hello (variable: i32) {
     fn hello_with_name(&this, name: &str) -> String {
         format!("Hello, {}!", name)
     }
+
+    fn get_variable(&this) -> i32 {
+        this.variable
+    }
 });
 
 fn main() {
     let variable = 24;
-
+    let session_connection = Connection::get_private(BusType::Session).unwrap();
     let hello = Hello::new(variable);
-    hello.run("com.dbus.test", dbus::BusType::Session, "/Hello");
+    hello.run("com.dbus.test", &session_connection, "/Hello");
 }
 ```
 
@@ -49,20 +56,25 @@ extern crate dbus;
 #[macro_use]
 extern crate dbus_macros;
 
+use dbus::{Connection, BusType};
+use std::rc::Rc;
+
 dbus_interface!("com.dbus.test", interface Hello {
     fn hello() -> String;
     fn hello_with_name(name: &str) -> String;
+    fn get_variable() -> i32;
 });
 
-
 fn main() {
-    let hello = Hello::new("com.dbus.test", "/Hello", dbus::BusType::Session);
+    let session_connection = std::rc::Rc::new(dbus::Connection::get_private(dbus::BusType::Session).unwrap());
+    let hello = Hello::new("com.dbus.test", "/Hello", session_connection);
 
     match hello.hello() {
         Ok(string) => println!("{}", string),
         Err(error) => println!("Error calling DBus service: {}", error),
     }
     println!("{}", hello.hello_with_name("World").unwrap());
+    println!("{}", hello.get_variable().unwrap());
 }
 ```
 
