@@ -24,8 +24,6 @@
  * TODO: Switch to macro 1.1.
  */
 
-#![allow(let_and_return)]
-
 pub fn to_camel(term: &str) -> String {
     let underscore_count = term.chars().filter(|c| *c == '_').count();
     let mut result = String::with_capacity(term.len() - underscore_count);
