@@ -1,6 +1,6 @@
 [package]
 name = "dbus-macros"
-version = "0.2.1-pre"
+version = "0.2.3"
 authors = ["Antoni Boucher <bouanto@zoho.com>",
            "Zeeshan Ali <zeeshanak@gnome.org>"]
 license = "MIT"
