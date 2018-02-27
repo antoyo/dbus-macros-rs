@@ -27,8 +27,6 @@
 #![allow(let_and_return)]
 
 pub fn to_camel(term: &str) -> String {
-    use std::ascii::AsciiExt;
-
     let underscore_count = term.chars().filter(|c| *c == '_').count();
     let mut result = String::with_capacity(term.len() - underscore_count);
     let mut at_new_word = true;
