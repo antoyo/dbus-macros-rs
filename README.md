@@ -56,7 +56,6 @@ extern crate dbus;
 #[macro_use]
 extern crate dbus_macros;
 
-use dbus::{Connection, BusType};
 use std::rc::Rc;
 
 dbus_interface!("com.dbus.test", interface Hello {
