@@ -8,4 +8,4 @@ description = "Convenient macros to use the dbus crate"
 repository = "https://github.com/antoyo/dbus-macros-rs"
 
 [dependencies]
-dbus = "^0.5"
+dbus = "^0.6"
