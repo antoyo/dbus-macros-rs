@@ -1,6 +1,6 @@
 ----
 
-No longer maintained or developed. Dropped in favor of [zbus](https://crates.io/crates/dbus)
+No longer maintained or developed. Dropped in favor of [zbus](https://crates.io/crates/zbus)
 ----
 
 D-Bus macros for Rust
